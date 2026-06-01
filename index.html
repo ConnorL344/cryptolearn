@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crypto Trading Challenges</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0c0f;
+  --surface: #111318;
+  --surface2: #181c23;
+  --border: #1e2530;
+  --border2: #2a3040;
+  --accent: #00e5a0;
+  --accent2: #0066ff;
+  --accent3: #ff6b35;
+  --text: #e8ecf0;
+  --text2: #7a8696;
+  --text3: #4a5568;
+  --green: #00e5a0;
+  --red: #ff4757;
+  --amber: #ffb347;
+  --purple: #a78bfa;
+  --mono: 'Space Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+
+/* Layout */
+.app { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+.sidebar { background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.main { overflow-y: auto; }
+
+/* Sidebar */
+.sidebar-header { padding: 24px 20px 16px; border-bottom: 1px solid var(--border); }
+.logo { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
+.sidebar-title { font-size: 15px; font-weight: 600; color: var(--text); }
+.sidebar-sub { font-size: 11px; color: var(--text2); margin-top: 3px; }
+
+.prog-section { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.prog-label { font-size: 11px; color: var(--text2); margin-bottom: 8px; display: flex; justify-content: space-between; }
+.prog-bar { background: var(--border); height: 3px; border-radius: 2px; overflow: hidden; }
+.prog-fill { height: 3px; background: var(--accent); border-radius: 2px; transition: width 0.5s ease; }
+.xp-row { display: flex; gap: 8px; margin-top: 10px; }
+.xp-pill { background: var(--surface2); border: 1px solid var(--border2); border-radius: 20px; padding: 3px 10px; font-family: var(--mono); font-size: 10px; color: var(--text2); }
+.xp-pill span { color: var(--accent); }
+
+.nav-section { padding: 12px 12px; flex: 1; }
+.nav-section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); padding: 4px 8px 8px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; transition: background 0.15s; margin-bottom: 2px; }
+.nav-item:hover { background: var(--surface2); }
+.nav-item.active { background: rgba(0,229,160,0.08); border: 1px solid rgba(0,229,160,0.15); }
+.nav-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+.nav-info { flex: 1; min-width: 0; }
+.nav-name { font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nav-meta { font-size: 10px; color: var(--text2); margin-top: 1px; }
+.nav-status { flex-shrink: 0; }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; }
+.status-done { background: var(--green); }
+.status-active { background: var(--amber); }
+.status-locked { background: var(--border2); }
+
+.sidebar-footer { padding: 16px 20px; border-top: 1px solid var(--border); }
+.tip-box { background: rgba(0,229,160,0.05); border: 1px solid rgba(0,229,160,0.15); border-radius: 8px; padding: 10px 12px; }
+.tip-label { font-size: 10px; color: var(--accent); font-family: var(--mono); letter-spacing: 0.05em; margin-bottom: 4px; }
+.tip-text { font-size: 11px; color: var(--text2); line-height: 1.5; }
+
+/* Main content */
+.main-inner { max-width: 860px; padding: 32px 36px; }
+
+/* Challenge view */
+.challenge-header { margin-bottom: 28px; }
+.ch-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; padding: 3px 9px; border-radius: 4px; text-transform: uppercase; }
+.tag-concept { background: rgba(0,102,255,0.12); color: #60a5fa; border: 1px solid rgba(0,102,255,0.2); }
+.tag-practice { background: rgba(0,229,160,0.1); color: var(--green); border: 1px solid rgba(0,229,160,0.18); }
+.tag-analysis { background: rgba(167,139,250,0.1); color: var(--purple); border: 1px solid rgba(167,139,250,0.18); }
+.tag-mindset { background: rgba(255,107,53,0.1); color: var(--accent3); border: 1px solid rgba(255,107,53,0.18); }
+.diff-tag { font-size: 10px; padding: 3px 8px; border-radius: 4px; }
+.diff-easy { background: rgba(0,229,160,0.08); color: var(--green); }
+.diff-medium { background: rgba(255,179,71,0.1); color: var(--amber); }
+.diff-hard { background: rgba(255,71,87,0.1); color: var(--red); }
+
+.ch-title { font-size: 24px; font-weight: 600; color: var(--text); line-height: 1.3; margin-bottom: 8px; }
+.ch-desc { font-size: 14px; color: var(--text2); line-height: 1.7; max-width: 640px; }
+
+/* Claude's take box */
+.claude-take { background: var(--surface); border: 1px solid var(--border2); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 16px 18px; margin-bottom: 28px; }
+.ct-label { font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 8px; }
+.ct-text { font-size: 13px; color: var(--text2); line-height: 1.7; }
+.ct-text strong { color: var(--text); font-weight: 500; }
+
+/* Tasks */
+.section-title { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 12px; }
+.task-list { margin-bottom: 28px; }
+.task-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 6px; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+.task-item:hover { border-color: var(--border2); background: var(--surface2); }
+.task-item.done { opacity: 0.5; }
+.task-cb { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid var(--border2); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.task-item.done .task-cb { background: var(--accent); border-color: var(--accent); }
+.task-text { font-size: 13px; color: var(--text); line-height: 1.5; flex: 1; }
+.task-item.done .task-text { text-decoration: line-through; color: var(--text2); }
+
+/* Quiz */
+.quiz-block { background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; padding: 20px; margin-bottom: 28px; }
+.quiz-q { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 14px; line-height: 1.5; }
+.quiz-options { display: flex; flex-direction: column; gap: 8px; }
+.quiz-opt { padding: 10px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text2); transition: all 0.15s; text-align: left; }
+.quiz-opt:hover:not(:disabled) { border-color: var(--border2); color: var(--text); }
+.quiz-opt.correct { background: rgba(0,229,160,0.08); border-color: var(--green); color: var(--green); }
+.quiz-opt.wrong { background: rgba(255,71,87,0.08); border-color: var(--red); color: var(--red); }
+.quiz-opt.reveal { background: rgba(0,229,160,0.05); border-color: rgba(0,229,160,0.3); color: var(--text2); }
+.quiz-feedback { margin-top: 12px; padding: 10px 14px; border-radius: 8px; font-size: 13px; line-height: 1.6; }
+.quiz-feedback.correct { background: rgba(0,229,160,0.08); color: var(--green); border: 1px solid rgba(0,229,160,0.2); }
+.quiz-feedback.wrong { background: rgba(255,71,87,0.06); color: #ff8a96; border: 1px solid rgba(255,71,87,0.15); }
+.quiz-next { margin-top: 12px; font-size: 12px; color: var(--accent); cursor: pointer; background: none; border: none; font-family: var(--mono); letter-spacing: 0.05em; padding: 0; }
+.quiz-next:hover { opacity: 0.8; }
+.quiz-progress { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-bottom: 12px; }
+
+/* Input area */
+.input-group { margin-bottom: 20px; }
+.input-label { font-size: 12px; color: var(--text2); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+.input-label span { font-family: var(--mono); font-size: 10px; color: var(--text3); }
+textarea { width: 100%; background: var(--surface); border: 1px solid var(--border2); border-radius: 8px; padding: 12px 14px; color: var(--text); font-family: var(--sans); font-size: 13px; line-height: 1.6; resize: vertical; min-height: 90px; transition: border-color 0.15s; }
+textarea:focus { outline: none; border-color: rgba(0,229,160,0.4); }
+textarea::placeholder { color: var(--text3); }
+
+/* Check answer */
+.check-area { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; }
+.btn { padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; font-family: var(--sans); }
+.btn-primary { background: var(--accent); color: #000; }
+.btn-primary:hover { opacity: 0.9; }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-ghost { background: transparent; border: 1px solid var(--border2); color: var(--text2); }
+.btn-ghost:hover { border-color: var(--text2); color: var(--text); }
+.btn-done { background: transparent; border: 1px solid var(--green); color: var(--green); }
+.btn-done:hover { background: rgba(0,229,160,0.08); }
+
+.ai-feedback { background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; padding: 16px 18px; margin-top: 12px; }
+.af-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.af-icon { width: 22px; height: 22px; background: rgba(0,229,160,0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; }
+.af-label { font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: 0.08em; }
+.af-text { font-size: 13px; color: var(--text2); line-height: 1.7; }
+.af-text strong { color: var(--text); }
+.af-score { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; font-family: var(--mono); font-size: 11px; color: var(--text2); }
+.score-val { color: var(--accent); font-size: 14px; font-weight: 700; }
+
+/* Scanner widget */
+.scanner-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.scanner-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+.sc-label { font-size: 10px; color: var(--text3); font-family: var(--mono); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.06em; }
+.sc-value { font-size: 20px; font-weight: 600; font-family: var(--mono); }
+.sc-sub { font-size: 11px; color: var(--text2); margin-top: 3px; }
+.green { color: var(--green); }
+.red { color: var(--red); }
+.amber { color: var(--amber); }
+.table-wrap { overflow-x: auto; margin-bottom: 20px; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th { text-align: left; padding: 8px 12px; color: var(--text3); font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 1px solid var(--border); font-weight: 400; }
+td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text2); }
+td:first-child { color: var(--text); font-weight: 500; }
+tr:hover td { background: var(--surface2); }
+.signal-badge { font-size: 10px; padding: 2px 7px; border-radius: 4px; font-family: var(--mono); font-weight: 700; }
+.signal-buy { background: rgba(0,229,160,0.1); color: var(--green); }
+.signal-sell { background: rgba(255,71,87,0.1); color: var(--red); }
+.signal-neutral { background: rgba(255,179,71,0.1); color: var(--amber); }
+
+/* Chart simulation */
+.chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 20px; overflow: hidden; }
+.chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.chart-coin { font-size: 13px; font-weight: 500; color: var(--text); }
+.chart-price { font-family: var(--mono); font-size: 18px; font-weight: 700; }
+canvas { display: block; width: 100%; }
+
+/* Strategy cards */
+.strat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 28px; }
+.strat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+.strat-card.recommended { border-color: rgba(0,229,160,0.3); }
+.strat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.strat-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.rec-badge { font-size: 9px; padding: 2px 7px; border-radius: 4px; background: rgba(0,229,160,0.1); color: var(--green); font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.06em; }
+.strat-desc { font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 10px; }
+.strat-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+.meta-pill { font-size: 10px; padding: 2px 8px; border-radius: 4px; background: var(--surface2); border: 1px solid var(--border); color: var(--text3); }
+
+/* Complete button */
+.complete-row { display: flex; align-items: center; gap: 12px; padding-top: 16px; border-top: 1px solid var(--border); margin-top: 8px; }
+.complete-msg { font-size: 12px; color: var(--text3); }
+
+/* Loading spinner */
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(0,229,160,0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Animations */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in { animation: fadeIn 0.3s ease forwards; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* Home view */
+.home-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 32px; }
+.home-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
+.home-card::after { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.2s; border-radius: 10px; }
+.home-card:hover { border-color: var(--border2); transform: translateY(-1px); }
+.home-card-icon { font-size: 22px; margin-bottom: 10px; }
+.home-card-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.home-card-count { font-size: 11px; color: var(--text2); }
+.home-card-bar { height: 2px; background: var(--border); border-radius: 1px; margin-top: 14px; overflow: hidden; }
+.home-card-prog { height: 2px; border-radius: 1px; transition: width 0.5s; }
+
+.welcome-block { margin-bottom: 32px; }
+.welcome-title { font-size: 26px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+.welcome-sub { font-size: 14px; color: var(--text2); line-height: 1.6; max-width: 560px; }
+
+.streak-bar { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
+.streak-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.streak-day { font-size: 9px; color: var(--text3); font-family: var(--mono); }
+.streak-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border2); }
+.streak-dot.active { background: var(--accent); }
+
+/* Overview stats */
+.stats-row { display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; flex: 1; min-width: 120px; }
+.stat-val { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--text); }
+.stat-lbl { font-size: 11px; color: var(--text3); margin-top: 3px; }
+/* Learn section */
+.learn-section { background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; margin-bottom: 28px; overflow: hidden; }
+.learn-toggle { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; cursor: pointer; user-select: none; }
+.learn-toggle:hover { background: var(--surface2); }
+.learn-toggle-left { display: flex; align-items: center; gap: 10px; }
+.learn-badge { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; padding: 3px 9px; border-radius: 4px; background: rgba(0,229,160,0.1); color: var(--accent); border: 1px solid rgba(0,229,160,0.18); text-transform: uppercase; }
+.learn-toggle-title { font-size: 13px; font-weight: 500; color: var(--text); }
+.learn-arrow { font-size: 12px; color: var(--text3); transition: transform 0.2s; display: inline-block; }
+.learn-arrow.open { transform: rotate(180deg); }
+.learn-body { padding: 0 18px 18px; border-top: 1px solid var(--border); display: none; }
+.learn-body.visible { display: block; }
+.learn-concepts { display: flex; flex-direction: column; gap: 16px; margin-top: 16px; }
+.concept-item { display: flex; gap: 12px; }
+.concept-num { width: 22px; height: 22px; border-radius: 50%; background: rgba(0,229,160,0.1); border: 1px solid rgba(0,229,160,0.2); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 10px; color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+.concept-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+.concept-desc { font-size: 12px; color: var(--text2); line-height: 1.65; }
+.concept-desc strong { color: var(--text); font-weight: 500; }
+.watchout-box { margin-top: 16px; background: rgba(255,107,53,0.06); border: 1px solid rgba(255,107,53,0.2); border-radius: 8px; padding: 12px 14px; }
+.watchout-label { font-family: var(--mono); font-size: 10px; color: var(--accent3); letter-spacing: 0.08em; margin-bottom: 6px; }
+.watchout-text { font-size: 12px; color: var(--text2); line-height: 1.65; }
+.watchout-text strong { color: var(--text); font-weight: 500; }
+.ref-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 12px; }
+.ref-table th { text-align: left; padding: 7px 10px; color: var(--accent); font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; border-bottom: 1px solid var(--border2); font-weight: 400; }
+.ref-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: top; line-height: 1.5; }
+.ref-table td:first-child { color: var(--text); font-weight: 500; white-space: nowrap; }
+.ref-table tr:last-child td { border-bottom: none; }
+
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">// CryptoLearn</div>
+      <div class="sidebar-title">Trading Challenges</div>
+      <div class="sidebar-sub">Beginner → Competent</div>
+    </div>
+    <div class="prog-section">
+      <div class="prog-label"><span>Overall progress</span><span id="prog-pct">0%</span></div>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+      <div class="xp-row">
+        <div class="xp-pill">XP: <span id="xp-val">0</span></div>
+        <div class="xp-pill">Streak: <span id="streak-val">0</span> days</div>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">Home</div>
+      <div class="nav-item active" id="nav-home" onclick="showHome()">
+        <div class="nav-icon" style="background:rgba(0,229,160,0.1);color:var(--accent)">⌂</div>
+        <div class="nav-info"><div class="nav-name">Dashboard</div></div>
+      </div>
+      <div id="nav-list"></div>
+    </div>
+    <div class="sidebar-footer">
+      <div style="margin-bottom:10px">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.06em;margin-bottom:5px">// OPTIONAL: API KEY FOR AI FEEDBACK</div>
+        <input type="password" id="api-key-input" placeholder="sk-ant-..." value=""
+          style="width:100%;font-size:11px;padding:6px 8px;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--text2);font-family:var(--mono);"
+          oninput="saveApiKey(this.value)" />
+        <div style="font-size:10px;color:var(--text3);margin-top:4px">Without key: smart local feedback. With key: full AI feedback.</div>
+      </div>
+      <div class="tip-box">
+        <div class="tip-label">// Claude's tip</div>
+        <div class="tip-text" id="daily-tip">Loading tip...</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="main-inner" id="main-content">
+      <div id="view-home"></div>
+    </div>
+  </main>
+</div>
+
+<script>
+const CHALLENGES = [
+  {
+    id: 0, section: 'Foundations', cat: 'concept', diff: 'easy',
+    title: 'Map the market structure',
+    desc: 'Before trading a single dollar, understand the ecosystem your money lives in.',
+    claudeTake: `Most beginners skip this and go straight to charts — huge mistake. The <strong>market structure determines your fills, your slippage, and your fees</strong>. I'd recommend Binance or Bybit as your starting CEX: deep liquidity, decent fees. For DEXs, Uniswap (Ethereum) or Jupiter (Solana) are the clearest learning grounds. Understanding that <strong>price = the last agreed trade</strong> — not some central number — changes how you read movements.`,
+    tasks: ['Describe the difference between a CEX and DEX in your own words', 'Explain what an order book is and how a trade is matched', 'Name 3 major CEXs and 2 DEXs', 'Explain how market makers influence spread and price'],
+    quizzes: [
+      { q: 'What is the "spread" in a crypto order book?', opts: ['The daily price range', 'The difference between the best bid and ask price', 'The trading fee charged by the exchange', 'The gap between open and close price'], answer: 1, explain: 'The spread is the gap between the highest buy order (bid) and the lowest sell order (ask). Tighter spreads = more liquidity = better fills for you.' },
+      { q: 'On a DEX, who provides the liquidity for trades?', opts: ['The exchange operator', 'Institutional market makers only', 'Liquidity providers who deposit token pairs into pools', 'Miners who validate the transactions'], answer: 2, explain: 'On DEXs like Uniswap, liquidity comes from LPs who deposit token pairs. They earn fees but take on "impermanent loss" risk.' },
+      { q: 'What happens to your order if you place a market buy when liquidity is thin?', opts: ['It cancels automatically', 'You get the mid-price', 'You experience slippage — paying more than expected', 'The order waits until liquidity improves'], answer: 2, explain: 'Slippage is the silent killer for beginners. A market order eats through the order book. In thin markets, your fill price can be far worse than the quoted price.' },
+    ],
+    answerPrompt: 'Describe how price is discovered on a crypto exchange and the role of CEXs vs DEXs',
+    xp: 100,
+    learn: {concepts:[{title:"CEX vs DEX", desc:"A <strong>Centralised Exchange (CEX)</strong> like Binance or Bybit holds your funds in custody and matches orders via an internal order book. Fast, liquid, user-friendly. A <strong>Decentralised Exchange (DEX)</strong> like Uniswap runs on smart contracts \u2014 you keep custody of your funds and trades settle on-chain. Slower, costlier in gas fees, but trustless."}, {title:"The order book", desc:"An order book is a live list of all open buy and sell orders at every price level. The highest buy (bid) and the lowest sell (ask) are the best prices. When a buy meets a sell, a trade executes. The <strong>spread</strong> \u2014 the gap between bid and ask \u2014 tells you how liquid the market is. Tight spread = lots of activity. Wide spread = worse fills."}, {title:"How price is actually set", desc:"Price is not set by any central authority. It is simply <strong>the price of the last agreed trade</strong>. Market makers post limit orders on both sides, profiting from the spread \u2014 they are why you can almost always find a fill on a major exchange."}, {title:"Slippage", desc:"When you place a market order, it fills against existing orders in the book. If the book is thin or your order is large, you eat through multiple price levels \u2014 paying more than the quoted price. This is <strong>slippage</strong>. On DEXs it can be even worse. Always check liquidity depth before entering a large market order."}], watchout:"Beginners often assume DEXs are safer because they are decentralised. But <strong>smart contract bugs, rug pulls, and impermanent loss</strong> are real DEX-specific risks. CEXs carry custody risk (see FTX). Neither is inherently safe.", table:{headers:["Exchange type", "Custody", "Speed", "Best for"], rows:[["CEX (Binance, Bybit)", "Exchange holds funds", "Fast", "Learning, active trading"], ["DEX (Uniswap, Jupiter)", "You hold funds", "Slower / gas fees", "DeFi, new token access"]]}},
+  },
+  {
+    id: 1, section: 'Foundations', cat: 'concept', diff: 'easy',
+    title: 'Decode candlestick charts',
+    desc: 'Candlesticks are the native language of price action. You need to be fluent.',
+    claudeTake: `Candlesticks originated in 18th-century Japan for rice trading — and they still work because human psychology hasn't changed. The patterns that matter most for beginners are: <strong>doji (indecision), hammer/pin bar (reversal signal), engulfing (momentum shift)</strong>. Don't memorise 50 patterns — master 5 well. I'd focus on the <strong>1H and 4H timeframes</strong> to start; 1-minute charts are noise factories designed to make you overtrade.`,
+    tasks: ['Open BTC/USDT on TradingView on the 4H timeframe', 'Find and label a doji, a hammer, and an engulfing candle', 'For each: note what happened to price in the next 3 candles', 'Identify one setup where the pattern failed — equally important'],
+    quizzes: [
+      { q: 'A "doji" candle has a very small body. What does this signal?', opts: ['Strong bullish momentum', 'Indecision between buyers and sellers', 'A confirmed reversal downward', 'High trading volume'], answer: 1, explain: 'A doji means open ≈ close. Buyers and sellers were equally matched. On its own it\'s not a signal — context (where it appears) is everything.' },
+      { q: 'A bearish engulfing candle appears at the top of an uptrend. What does it suggest?', opts: ['Continuation of the uptrend', 'Neutral market conditions', 'Potential reversal — sellers took control', 'Low volatility ahead'], answer: 2, explain: 'A bearish engulfing means a red candle fully "swallows" the prior green candle. At a resistance level after an uptrend, this is a strong reversal signal — but always wait for confirmation.' },
+      { q: 'What does a long lower wick (hammer) typically indicate when it appears at a support level?', opts: ['Sellers are dominant', 'Price is likely to continue falling', 'Buyers rejected lower prices — potential bounce', 'Volume is decreasing'], answer: 2, explain: 'The long lower wick shows sellers pushed price down, but buyers came in and pushed it back up before close. At a support level, this rejection is a strong bullish signal.' },
+    ],
+    answerPrompt: 'Explain what you\'ve observed about candlestick patterns on a real chart and which ones you find most reliable',
+    xp: 100,
+    learn: {concepts:[{title:"Anatomy of a candle", desc:"Each candle shows 4 things: <strong>Open, High, Low, Close</strong>. The body shows the open-to-close range. The wicks show how far price travelled beyond that. A big body = decisive move. Small body = indecision. Green = closed above open. Red = closed below open."}, {title:"The 5 patterns worth mastering", desc:"<strong>Doji</strong> \u2014 tiny body, open \u2248 close: indecision. <strong>Hammer</strong> \u2014 long lower wick at a low: buyers rejected sellers. <strong>Shooting star</strong> \u2014 long upper wick at a high: sellers rejected buyers. <strong>Bullish engulfing</strong> \u2014 green candle swallows prior red: buyers took control. <strong>Bearish engulfing</strong> \u2014 red candle swallows prior green: sellers took control."}, {title:"Context is everything", desc:"A hammer at a random point means nothing. A hammer <strong>at a known support level after a downtrend</strong> is significant. Every pattern only has meaning in context: where price has been, what level it is at, and what the higher timeframe is doing. Pattern without context is noise."}, {title:"Timeframe selection", desc:"Focus on <strong>1H and 4H charts</strong> to start. The 1-minute chart is mostly noise. The daily chart gives macro context. The 4H is the sweet spot: enough signals without the chaos of lower timeframes."}], watchout:"<strong>Pattern overfitting</strong> \u2014 once you learn patterns, you see them everywhere. Most will fail. A pattern has higher probability only when: it appears at a key level, the higher timeframe agrees, and volume confirms the move. A pretty candle shape alone is not a trade signal.", table:{headers:["Pattern", "What it looks like", "Signal", "Context needed"], rows:[["Doji", "Tiny body, wicks both sides", "Indecision", "Near key S/R"], ["Hammer", "Long lower wick, small body at top", "Bullish reversal", "At support"], ["Shooting star", "Long upper wick, small body at bottom", "Bearish reversal", "At resistance"], ["Bullish engulfing", "Green candle wraps prior red", "Momentum shift up", "End of downtrend"], ["Bearish engulfing", "Red candle wraps prior green", "Momentum shift down", "End of uptrend"]]}},
+  },
+  {
+    id: 2, section: 'Foundations', cat: 'concept', diff: 'easy',
+    title: 'Master order types',
+    desc: 'Using the wrong order type is one of the most expensive beginner mistakes.',
+    claudeTake: `Here's my strong opinion: <strong>never use market orders unless you need to exit an emergency position immediately</strong>. Always use limit orders for entries. A market order in a volatile crypto move can result in slippage of 0.5–3% — that's your entire edge wiped before the trade even starts. For stop-losses: I prefer <strong>stop-limit over stop-loss</strong> in crypto, because exchanges can wick through a stop-loss and fill you far below. The trade-off is you might not fill at all — but that's better than a catastrophic fill.`,
+    tasks: ['Define in writing: market, limit, stop-loss, stop-limit, trailing stop', 'Set up (don\'t place) a limit buy order on a paper account', 'Set a stop-loss 2% below your hypothetical entry', 'Write one scenario where each order type is the right choice'],
+    quizzes: [
+      { q: 'You want to buy ETH only if it drops to $2,800. Which order do you use?', opts: ['Market order at current price', 'Limit buy order at $2,800', 'Stop-loss order at $2,800', 'Trailing stop'], answer: 1, explain: 'A limit buy order sits in the order book and only fills at your exact price (or better). Perfect for patient entries at specific levels.' },
+      { q: 'What is the key risk of a stop-limit order compared to a regular stop-loss?', opts: ['It costs more in fees', 'It may not fill if price gaps through your limit', 'It triggers too early', 'It only works on CEXs'], answer: 1, explain: 'In a fast-moving market, price can gap past your stop-limit\'s trigger and limit price without filling you. You remain in a losing position. That\'s why some prefer stop-loss (market) for emergency exits despite worse fill quality.' },
+      { q: 'A trailing stop of 5% means:', opts: ['Your stop is always 5% below your entry price', 'Your stop follows price up and is always 5% below the highest price reached', 'You lose 5% maximum per trade', 'The stop executes after 5% profit'], answer: 1, explain: 'Trailing stops are powerful for letting winners run. As price rises, the stop follows. If price reverses 5% from the peak, it triggers — locking in most of your profit.' },
+    ],
+    answerPrompt: 'Explain in your own words when you would use a limit order vs a market order and why',
+    xp: 100,
+    learn: {concepts:[{title:"Market orders \u2014 use sparingly", desc:"A market order executes immediately at the best available price. You are guaranteed a fill, but <strong>not a price</strong>. In volatile crypto moves, your fill can be 0.5\u20132% worse than quoted (slippage). Use market orders only for emergency exits or when entry timing is truly critical."}, {title:"Limit orders \u2014 your default", desc:"A limit order sits in the order book and only fills at your exact price or better. You control your entry precisely, pay lower fees, and avoid slippage. The trade-off: it may not fill if price does not reach your level. <strong>For all planned entries, use limit orders.</strong>"}, {title:"Stop-loss vs stop-limit", desc:"A <strong>stop-loss</strong> (stop-market) triggers a market sell when price hits your stop \u2014 guaranteed fill, potentially bad price. A <strong>stop-limit</strong> triggers a limit sell at your chosen price \u2014 better price, but may not fill if price gaps through. In normal conditions, stop-limit is cleaner. In a crash, stop-market ensures you exit."}, {title:"Trailing stops", desc:"A trailing stop follows price upward by a fixed % or amount. As price rises, the stop rises with it. If price reverses by the trail amount, it triggers. Excellent for <strong>letting winners run</strong> without constant monitoring. Set too tight = stopped out by normal volatility. Too loose = giving back too much profit."}], watchout:"Never move your stop-loss further from your entry to give a trade more room. This is the most common way beginners turn a planned 2% loss into a 15% loss. <strong>Your stop is your pre-defined risk. Moving it means your original analysis was wrong and you are now gambling.</strong>", table:{headers:["Order type", "Fills at", "Guaranteed fill?", "Best used for"], rows:[["Market", "Best available price", "Yes", "Emergency exits only"], ["Limit", "Your price or better", "No", "All planned entries"], ["Stop-loss", "Market price at trigger", "Yes", "Crash / fast-move exits"], ["Stop-limit", "Your limit price at trigger", "No", "Normal stop placement"], ["Trailing stop", "Moves with price", "No", "Locking in profit"]]}},
+  },
+  {
+    id: 3, section: 'Technical skills', cat: 'analysis', diff: 'medium',
+    title: 'Spot support & resistance',
+    desc: 'Support and resistance are where price decisions are made. Learn to see them.',
+    claudeTake: `S/R is the foundation of almost every trading strategy. My take: <strong>horizontal levels drawn from high-timeframe wicks are more reliable than trendlines</strong>. Trendlines are subjective; a clear horizontal level at $30,000 BTC that's been tested 4 times is objective. The more times a level is tested without breaking, the stronger it is — <strong>but also the more energy builds for an eventual break</strong>. When a support breaks, it often becomes resistance (and vice versa) — watch for this "flip" as it creates excellent re-entry opportunities.`,
+    tasks: ['Open a 4H ETH chart going back 3 months', 'Draw 3 horizontal support levels with clear price reactions', 'Draw 3 horizontal resistance levels', 'Identify at least one level where support flipped to resistance'],
+    quizzes: [
+      { q: 'A support level is tested 4 times and holds. On the 5th test, what is generally expected?', opts: ['The level will definitely hold again', 'The level is likely to break — too much energy has built up', 'Nothing changes — each test is independent', 'Price will accelerate upward immediately'], answer: 1, explain: 'Each test of a level depletes the buyers (or sellers) defending it. Multiple tests without breaking often signals accumulation of pressure for an eventual break — this is "level fatigue".' },
+      { q: 'Price breaks below a strong support level, then bounces back to test that level from below. This is called:', opts: ['A false breakout', 'A support flip — the old support now acts as resistance', 'A double bottom', 'A market correction'], answer: 1, explain: 'Support/resistance flip is one of the most reliable patterns in technical analysis. When price breaks a level and retests it from the other side, it often confirms the break and offers an ideal entry in the new direction.' },
+      { q: 'Which timeframe\'s support/resistance levels are most significant?', opts: ['1-minute — most precise', '15-minute — most active', 'Higher timeframes (4H, Daily) — more traders watching them', 'All timeframes are equally significant'], answer: 2, explain: 'Higher timeframe levels attract more attention from more traders — institutions, funds, and experienced retail all draw from daily/weekly charts. More confluence = stronger level.' },
+    ],
+    answerPrompt: 'Describe the support and resistance levels you found on the ETH chart and what price reactions you observed at each',
+    xp: 150,
+    learn: {concepts:[{title:"What support and resistance are", desc:"<strong>Support</strong> is a price level where buyers have historically stepped in. <strong>Resistance</strong> is where sellers have capped advances. These levels exist because traders have memory \u2014 they remember where price reversed and cluster orders at the same levels again."}, {title:"How to draw them", desc:"Look for price levels where multiple wicks or bodies touched and reversed. The more touches without breaking, the stronger the level. Draw lines at the <strong>area of most touches</strong> \u2014 not pixel-perfect. S/R are zones, not laser lines."}, {title:"The support/resistance flip", desc:"When price breaks through a support level, that level often becomes resistance \u2014 and vice versa. This is called an <strong>S/R flip</strong>. Old buyers trapped below the break become sellers when price returns to that level. One of the most reliable patterns in technical analysis."}, {title:"Timeframe hierarchy", desc:"A resistance on the <strong>daily chart</strong> carries far more weight than one on the 15-minute chart. More traders see it, more orders cluster there. Always identify significant daily or weekly levels first, then zoom in to lower timeframes for precise entries."}], watchout:"<strong>Forcing levels</strong> is the most common mistake. Not every horizontal line on a chart is meaningful. A level is only significant if price reacted clearly at it multiple times. If you have to squint to see the reaction, it is probably not a real level.", table:null},
+  },
+  {
+    id: 4, section: 'Technical skills', cat: 'analysis', diff: 'medium',
+    title: 'Build your indicator setup',
+    desc: 'Indicators confirm — they don\'t predict. Use them for confluence, not as gospel.',
+    claudeTake: `Controversial opinion: <strong>most retail traders use too many indicators</strong>. I\'d recommend starting with just 3: RSI, 50 EMA, and 200 EMA. The 50/200 EMA cross (the "golden cross" up, "death cross" down) is widely watched and self-fulfilling on Bitcoin. RSI above 50 = bullish momentum; below 50 = bearish. The setup I find most reliable for beginners: <strong>price above 200 EMA (macro trend bullish) + RSI bouncing off 40-50 (momentum reset) = quality long entry zone</strong>. Avoid trading counter-trend until you have 100+ hours of chart time.`,
+    tasks: ['Add RSI(14), 50 EMA, and 200 EMA to a BTC chart', 'Find 3 moments where price was above 200 EMA and RSI reset to ~50', 'Find 2 "death cross" moments — did price fall significantly after?', 'Write: does RSI divergence (price up, RSI down) appear reliable to you?'],
+    quizzes: [
+      { q: 'RSI is at 75 on the 4H chart. What does this typically mean?', opts: ['Strong buy signal — momentum is strong', 'Overbought — the asset may be due for a pullback', 'Oversold — price is likely to bounce', 'Neutral — no actionable signal'], answer: 1, explain: 'RSI above 70 = overbought. It doesn\'t mean "sell immediately" — an asset can stay overbought for a long time in a strong trend — but it does mean risk is elevated for new long entries.' },
+      { q: 'What is RSI divergence?', opts: ['RSI and price both making new highs', 'Price makes a new high but RSI makes a lower high — signal of weakening momentum', 'RSI crosses above 50', 'Price and RSI moving in the same direction'], answer: 1, explain: 'Divergence is powerful but subtle. If price makes a higher high but RSI makes a lower high, the rally is losing steam — buyers are less enthusiastic than the price suggests. Often precedes reversals.' },
+      { q: 'The 50 EMA crosses above the 200 EMA on the daily Bitcoin chart. This is called:', opts: ['A death cross — bearish signal', 'A golden cross — historically bullish signal', 'An RSI reset', 'A support flip'], answer: 1, explain: 'The golden cross (50 EMA > 200 EMA) is one of the most watched macro signals in crypto. Historically it has preceded significant Bitcoin bull runs. It\'s a lagging indicator — but institutions act on it, making it somewhat self-fulfilling.' },
+    ],
+    answerPrompt: 'Describe the indicator setup you built and what confluent signals you found most reliable',
+    xp: 150,
+    learn: {concepts:[{title:"RSI \u2014 Relative Strength Index", desc:"RSI measures momentum on a 0\u2013100 scale. <strong>Above 70 = overbought</strong>, below 30 = oversold. But in strong trends, RSI can stay overbought for a long time. More useful signal: RSI <strong>above 50 = bullish momentum</strong>, below 50 = bearish. The 50 level is the most important to watch day-to-day."}, {title:"EMAs \u2014 Exponential Moving Averages", desc:"An EMA smooths price action, weighting recent prices more heavily. The <strong>50 EMA</strong> shows medium-term trend. The <strong>200 EMA</strong> shows long-term trend. Price above both = broadly bullish. Price crossing below the 200 EMA is a serious bearish signal that institutional traders respond to."}, {title:"Golden and death cross", desc:"50 EMA crosses <strong>above</strong> 200 EMA = Golden Cross (bullish). 50 EMA crosses <strong>below</strong> 200 EMA = Death Cross (bearish). These are lagging signals \u2014 the move has already started \u2014 but they are widely watched, which makes them somewhat self-fulfilling on Bitcoin especially."}, {title:"RSI divergence", desc:"Price makes a higher high but RSI makes a <strong>lower high</strong>: momentum is weakening \u2014 potential reversal ahead. This is bearish divergence. Bullish divergence: price makes a lower low but RSI makes a higher low. Combine divergence with a key S/R level for higher probability signals."}], watchout:"<strong>Indicator overload.</strong> Adding 6 indicators does not make analysis stronger \u2014 it makes it contradictory. RSI, 50 EMA, and 200 EMA is enough to start. Adding MACD, Bollinger Bands, Stochastic, and Ichimoku on top creates paralysis. Master 3 tools deeply before adding more.", table:{headers:["Signal", "What to look for", "Reliability"], rows:[["RSI > 50", "Bullish momentum filter", "Medium \u2014 use as filter not signal"], ["RSI < 50", "Bearish momentum filter", "Medium \u2014 use as filter not signal"], ["Price above 200 EMA", "Long-term bull trend", "High on daily chart"], ["Golden cross", "50 EMA crosses above 200", "High but lagging indicator"], ["Bullish divergence", "Price lower low, RSI higher low", "High \u2014 needs S/R confluence"]]}},
+  },
+  {
+    id: 5, section: 'Technical skills', cat: 'analysis', diff: 'medium',
+    title: 'Multi-timeframe analysis',
+    desc: 'Trading against the higher timeframe trend is where most beginners get destroyed.',
+    claudeTake: `My workflow for every potential trade: <strong>Daily → 4H → 1H → Entry</strong>. The daily tells you the overall bias. The 4H shows the swing structure. The 1H finds your entry trigger. Never enter on the 1H if the daily is screaming the other direction. Think of it like this: the daily is the ocean current, the 4H is the wave, and the 1H is where you paddle. You can paddle against the current, but you'll exhaust yourself. <strong>The most important rule: if 2 of 3 timeframes disagree, stand aside.</strong>`,
+    tasks: ['Pick any top-10 coin by market cap', 'Assess trend on 1D: bullish, bearish, or ranging?', 'Assess trend on 4H — does it align with the daily?', 'Assess trend on 1H — write your overall bias and reasoning'],
+    quizzes: [
+      { q: 'The daily chart is bearish, but the 1-hour chart shows a small uptrend. What should a beginner do?', opts: ['Trade the 1H uptrend — more opportunities', 'Stand aside or only consider short trades — trade with the daily', 'Buy immediately — the 1H is more recent', 'Wait for the 1H to also turn bearish, then trade nothing'], answer: 1, explain: 'Always trade in the direction of the higher timeframe. A 1H uptrend within a daily downtrend is a counter-trend move — statistically lower probability and higher risk. Wait for alignment.' },
+      { q: 'You\'re analyzing BTC: daily is bullish, 4H is bullish, 1H is at a key resistance. This is:', opts: ['A bearish scenario — too much agreement', 'Ideal — aligned timeframes with a precise 1H entry point', 'Inconclusive — need more timeframes', 'A ranging market'], answer: 1, explain: 'This is the best-case scenario for a long trade. Daily and 4H alignment gives directional conviction; the 1H resistance level gives you a precise entry trigger (wait for the 1H to break and hold the resistance as support).' },
+      { q: 'What is "timeframe confluence"?', opts: ['Using indicators across multiple timeframes', 'When multiple timeframes all point in the same direction', 'Trading the same asset on different exchanges', 'Averaging your entry across time'], answer: 1, explain: 'Confluence = multiple independent factors agreeing. When Daily + 4H + 1H all show bullish structure + RSI momentum + key S/R level, the probability of a successful trade is significantly higher than acting on any single signal.' },
+    ],
+    answerPrompt: 'Describe the multi-timeframe analysis you did — what coin, what did each timeframe show, and what was your overall bias?',
+    xp: 150,
+    learn: {concepts:[{title:"Why multiple timeframes matter", desc:"Every timeframe tells a different part of the same story. The daily shows the forest; the 1H shows individual trees. A strong 1H buy signal inside a daily downtrend has much lower probability than the same signal inside a daily uptrend."}, {title:"The top-down approach", desc:"Always analyse <strong>high to low</strong>. Daily establishes overall bias. 4H shows current swing structure. 1H times the entry. Your 1H entry should align with the <strong>daily direction</strong>. Counter-trend trades on the 1H fighting the daily are low probability."}, {title:"Identifying trend on each timeframe", desc:"A timeframe is <strong>bullish</strong> when price is above key EMAs, making higher highs and higher lows. <strong>Bearish</strong>: price below EMAs, making lower highs and lower lows. <strong>Ranging</strong>: price oscillating between clear S/R without directional structure. Each state requires a different approach."}, {title:"Confluence across timeframes", desc:"The highest-probability setups occur when <strong>all three timeframes agree</strong>. Daily bullish + 4H bullish + 1H pullback to support = strong long setup. When timeframes conflict, the correct move is usually to wait. Forcing a trade when the picture is mixed is a major source of avoidable losses."}], watchout:"Beginners often use the lower timeframe to confirm a trade they have already emotionally decided on. This is backwards \u2014 hunting for evidence that supports what you want, not what the market shows. Assess each timeframe neutrally before forming a bias.", table:{headers:["Timeframe", "Role", "What to assess"], rows:[["Daily (1D)", "Macro bias", "Overall trend direction and key S/R"], ["4-Hour (4H)", "Swing structure", "Current swing trend and setup area"], ["1-Hour (1H)", "Entry timing", "Entry trigger and precise SL placement"]]}},
+  },
+  {
+    id: 6, section: 'Risk & strategy', cat: 'practice', diff: 'easy',
+    title: 'Write your risk rules',
+    desc: 'No written risk rules = gambling. This is the single most important challenge.',
+    claudeTake: `Here's my strong opinion on position sizing: <strong>never risk more than 1% of your total account on a single trade</strong> as a beginner. This feels tiny. It is. That's the point — it keeps you in the game long enough to learn. With 1% risk, you can lose 20 trades in a row and still have 80% of your capital. Professionals often use 0.5%. <strong>The daily loss limit is equally critical</strong>: I'd suggest 3% max daily drawdown. Once you hit it, the screen goes off. No exceptions. Revenge trading after a bad day is how accounts get wiped in a single session.`,
+    tasks: ['Write your max risk per trade as a % (beginner: 1-2%)', 'Set a max daily loss limit and commit to stopping when hit', 'Write out your position sizing formula', 'Define your "no-trade" conditions: news events, emotional state, etc.'],
+    quizzes: [
+      { q: 'You have a $1,000 account and risk 2% per trade. Your stop-loss is $10 below your entry. What position size do you take?', opts: ['$200 worth of the asset', '2 units regardless of price', '$1,000 ÷ $10 = $100 position... wait, $20 risk ÷ $10 stop = 2 units', 'It depends on the asset price'], answer: 2, explain: 'Risk amount = $1,000 × 2% = $20. Position size = Risk ÷ Stop distance = $20 ÷ $10 = 2 units. This is the correct formula. Many beginners think "risk 2%" means "buy $20 of the asset" — that\'s wrong.' },
+      { q: 'Why is a maximum daily loss limit important?', opts: ['To minimize taxes', 'To prevent revenge trading from wiping your account after a bad session', 'To comply with exchange rules', 'To maintain a trading diary'], answer: 1, explain: 'After a loss, the emotional impulse to "get it back" is powerful and dangerous. A hard daily loss limit removes the decision entirely. Professional traders treat it as sacred — it\'s an automatic rule, not a judgment call.' },
+      { q: 'You\'re up 5% on a trade. Your original plan said take profit at 4%. What do you do?', opts: ['Hold — greed says it might go higher', 'Exit at your original 4% target — stick to the plan', 'Move your stop to breakeven and hold forever', 'It depends on how you feel in the moment'], answer: 1, explain: 'Changing your plan mid-trade based on emotion is where profits disappear. If your original analysis said 4%, exit at 4%. Adjusting targets upward because you\'re winning is the mirror image of the mistake that causes losses.' },
+    ],
+    answerPrompt: 'Write out your personal risk rules: max % per trade, daily loss limit, position sizing formula, and your no-trade conditions',
+    xp: 100,
+    learn: {concepts:[{title:"The 1% rule", desc:"Risk no more than <strong>1\u20132% of your total account on any single trade</strong>. With 1% risk per trade you can lose 20 trades in a row and still have 80% of your capital. Professional traders typically risk 0.5\u20131%. The goal is not to get rich on one trade \u2014 it is to survive long enough to find your edge."}, {title:"Position sizing formula", desc:"The most important formula in trading: <strong>Position size = Risk amount \u00f7 (Entry price \u2212 Stop-loss price)</strong>. If you have $1,000, risk 1% ($10), and your stop is $5 below entry, your position is 2 units. This ensures every trade risks exactly the same dollar amount regardless of where the stop sits."}, {title:"The daily loss limit", desc:"Set a maximum you are willing to lose in a single day \u2014 typically <strong>2\u20133% of account</strong>. The moment you hit it, you stop trading for the day. No exceptions. After two or three losses, emotional state degrades, decision quality collapses, and revenge-trading compounds losses rapidly."}, {title:"When not to trade", desc:"Some of the best trading decisions are no trade. Avoid trading during major economic announcements (FOMC, CPI), when you are tired or emotional, after 2+ losses in a row, or when the market has no clear structure. <strong>Sitting on your hands is a legitimate and often profitable position.</strong>"}], watchout:"<strong>Increasing position size after losses</strong> to recover faster is the single most common way beginners blow accounts. The math works against you: a 50% loss requires a 100% gain to recover. Risk management is not a constraint on profits \u2014 it is what keeps you in the game long enough to be profitable.", table:{headers:["Account size", "1% risk per trade", "2% risk per trade", "Position size (1% risk, $5 stop)"], rows:[["$500", "$5", "$10", "1 unit"], ["$1,000", "$10", "$20", "2 units"], ["$5,000", "$50", "$100", "10 units"], ["$10,000", "$100", "$200", "20 units"]]}},
+  },
+  {
+    id: 7, section: 'Risk & strategy', cat: 'practice', diff: 'medium',
+    title: 'Paper trade for 1 week',
+    desc: 'Paper trading is your flight simulator. Use it until entries feel automatic.',
+    claudeTake: `Paper trading is underrated and underused. Most beginners want to use real money immediately because paper "doesn't feel real". That's precisely the point — it removes the emotional component so you can focus on the mechanics. <strong>Recommended platforms: Bybit testnet or TradingView's paper trading</strong> (built in — no signup needed). My rule: don't touch real money until you've had 2 consecutive profitable paper trading weeks following your written rules. Also — <strong>paper trade at the same size you'd use with real money</strong>. Many people use 10× size "for practice" and learn nothing about position sizing psychology.`,
+    tasks: ['Set up a TradingView paper account or Bybit testnet account', 'Execute 10 trades strictly following your written risk rules', 'Log every trade: entry, exit, SL, TP, and reasoning', 'At week end: calculate win rate, average winner, average loser'],
+    quizzes: [
+      { q: 'Your win rate after 10 paper trades is 40% but you\'re profitable. How is this possible?', opts: ['It isn\'t — you need >50% win rate to be profitable', 'Your average winner is larger than your average loser', 'You got lucky on 4 very large trades', 'Fees must be very low'], answer: 1, explain: 'This is one of the most important concepts in trading. With a 1:3 risk-to-reward ratio, you only need to win 25% of trades to break even. A 40% win rate at 1:3 R:R is extremely profitable.' },
+      { q: 'After 3 losing paper trades in a row, you feel the urge to increase your position size to "make it back faster". You should:', opts: ['Do it — higher risk when confident is smart', 'Stick to your 1-2% risk rule. The impulse itself is a red flag', 'Take a break and come back with a fresh mindset, then increase size', 'Only increase if you\'re sure the next trade is a winner'], answer: 1, explain: 'Three losses in a row is normal variance — not a signal to size up. The urge to "make it back" is one of the most dangerous psychological patterns in trading. Your edge plays out over 50+ trades, not 3.' },
+    ],
+    answerPrompt: 'Share your paper trading results: how many trades, win rate, average R:R, and what was your biggest learning from the week',
+    xp: 200,
+    learn: {concepts:[{title:"Why paper trade at all", desc:"Paper trading lets you practice the <strong>mechanics of trading without financial risk</strong>: placing orders, managing positions, following rules, reading charts in real time. Make your mistakes when the cost is zero. Every error in paper trading is a lesson that would have cost real money otherwise."}, {title:"How to do it properly", desc:"Paper trading only works if you treat it seriously. Use the <strong>same position sizes you would use for real</strong>, follow your written risk rules on every trade, and do not restart when you lose. TradingView has built-in paper trading. Bybit and Binance both offer testnet accounts with real market data."}, {title:"What to measure", desc:"After your paper trading week calculate: <strong>Win rate</strong> (wins \u00f7 total trades), <strong>Average R:R</strong> (average profit on winners \u00f7 average loss), and <strong>Expectancy</strong> (win rate \u00d7 avg win \u2212 loss rate \u00d7 avg loss). Expectancy above 0 means your system is theoretically profitable."}, {title:"The emotional gap", desc:"Paper trading feels different from live trading because no real money is at stake. That is OK \u2014 it still teaches mechanics and discipline. The emotional component can only be learned with real money, but <strong>start with the smallest amount you can afford to lose entirely</strong>. Solve mechanics first."}], watchout:"Do not paper trade indefinitely. After 2\u20133 profitable weeks, move to real money with tiny size. Infinite paper trading becomes its own avoidance mechanism \u2014 a way of never having to commit. The goal is to be ready, not perfect.", table:null},
+  },
+  {
+    id: 8, section: 'Risk & strategy', cat: 'practice', diff: 'medium',
+    title: 'Calculate risk:reward on setups',
+    desc: 'Never take a trade with R:R below 1:2. This separates traders from gamblers.',
+    claudeTake: `The minimum R:R I'd personally take is 1:2. Ideally 1:3 or higher. Here's why: at 1:2 with a 40% win rate, you're profitable. At 1:1 you need 55%+ win rate to overcome fees — nearly impossible to sustain. <strong>The best trades I've seen beginners miss are the ones that look "too good" — a 1:5 setup at a key level after a strong trend</strong>. They hesitate because the stop feels big or the target feels far. The math doesn't care about feelings. One thing to watch: <strong>don't set TP at the exact next resistance — set it just below</strong>, because other sellers will be there too and price often stalls before reaching the exact level.`,
+    tasks: ['Find 5 clear historical setups on any chart', 'Mark entry, stop-loss, and take-profit for each', 'Calculate R:R = (TP − Entry) ÷ (Entry − SL)', 'Discard any setup below 1:2 — would 3+ survive the filter?'],
+    quizzes: [
+      { q: 'Entry: $100. Stop-loss: $97. Take-profit: $109. What is the R:R?', opts: ['1:2', '1:3', '1:4', '3:9'], answer: 1, explain: 'Risk = $100 − $97 = $3. Reward = $109 − $100 = $9. R:R = 9 ÷ 3 = 1:3. Clean setup. Note: the stop is 3% and the target is 9% — always check these as percentages too to make sure they\'re realistic.' },
+      { q: 'Why should you set your take-profit slightly BEFORE a known resistance level?', opts: ['To be more conservative', 'Because other sellers cluster at exact levels — price may reverse just before', 'Take-profit should always be at the exact level', 'It has lower fees'], answer: 1, explain: 'Resistance levels are where sellers wait. If 1,000 traders all have sells at $50,000 BTC, price may get to $49,800 and reverse before hitting $50,000. Place TP at $49,700-$49,800 to ensure your order fills in the rush.' },
+    ],
+    answerPrompt: 'Share the 5 setups you analyzed — entry, SL, TP, and R:R for each. Which setup had the best ratio and why did you find it?',
+    xp: 150,
+    learn: {concepts:[{title:"What R:R is and why it matters", desc:"<strong>Risk-to-reward ratio (R:R)</strong> compares how much you stand to lose vs gain. A 1:2 R:R means you risk $1 to potentially make $2. At 1:2 R:R with a 40% win rate, you are profitable. At 1:1, you need over 55% win rate just to break even after fees \u2014 nearly impossible to sustain."}, {title:"Setting your stop-loss", desc:"Stop-loss placement should be <strong>technical, not arbitrary</strong>. Place it below the last swing low for longs \u2014 somewhere that, if reached, proves your trade idea wrong. Never set a stop at a fixed percentage like '2% below entry' without regard for market structure."}, {title:"Setting your take-profit", desc:"Target the next significant resistance level for longs \u2014 but <strong>place it just before the level</strong>, not at it. Other traders have sell orders at exact levels; you want your order to fill in the rush before price stalls. A target just below resistance typically fills; at resistance it often does not."}, {title:"Minimum viable R:R", desc:"Only take trades with a minimum <strong>1:2 R:R</strong>. Ideally 1:3 or higher. If your natural stop and target give less than 1:2, either the setup is not good enough or the entry was not precise enough. Better entries with tighter stops improve R:R without moving the target."}], watchout:"Chasing tight stops to inflate R:R on paper. Setting a stop 0.5% below entry to manufacture a 1:6 R:R sounds great until normal volatility stops you out constantly. <strong>Your stop must be at a logical technical level</strong> \u2014 not wherever makes the ratio look attractive.", table:{headers:["Win rate", "R:R 1:1 (per 10 trades)", "R:R 1:2 (per 10 trades)", "R:R 1:3 (per 10 trades)"], rows:[["30%", "-40% net", "-10% net", "+20% net"], ["40%", "-20% net", "+20% net", "+60% net"], ["50%", "Breakeven", "+50% net", "+100% net"]]}},
+  },
+  {
+    id: 9, section: 'Mindset & review', cat: 'mindset', diff: 'easy',
+    title: 'Build your trade journal',
+    desc: 'The journal is where all real learning happens. Professionals call it their edge.',
+    claudeTake: `Most traders don't journal. The ones who do are statistically more profitable. It's that simple. What to log: entry/exit, time, setup name, R:R planned vs actual, emotion at entry (0-10 fear/greed scale), emotion at exit, and "did I follow my plan Y/N". <strong>After 50 trades, patterns emerge that you'd never notice otherwise</strong> — like "I always lose on Monday mornings" or "I never let my winners run past 1.5R". These are gold. I'd suggest <strong>Notion or a simple Google Sheet</strong> — fancy trading journal apps are unnecessary and often expensive. The tool matters less than the habit.`,
+    tasks: ['Set up a trade journal (spreadsheet or Notion template)', 'Log your last 5 paper trades with all fields', 'For each: rate your emotional state at entry and exit (1-10)', 'Identify your single biggest mistake pattern so far'],
+    quizzes: [
+      { q: 'After reviewing 20 journal entries, you notice you\'re profitable in the morning but always lose in the afternoon. The best response is:', opts: ['Push through — it\'s just variance', 'Stop trading in the afternoon until you understand why', 'Trade larger in the morning to compensate for afternoon losses', 'Ignore the pattern — past performance doesn\'t predict future'], answer: 1, explain: 'The journal\'s value is exactly this: identifying patterns invisible without data. If you consistently lose afternoons, stop. It might be fatigue, liquidity patterns, or news timing. Investigate and adapt.' },
+    ],
+    answerPrompt: 'Share what your trade journal looks like and what patterns or insights you\'ve spotted in your first entries',
+    xp: 100,
+    learn: {concepts:[{title:"What to log in every trade", desc:"At minimum: <strong>date, asset, direction, entry price, stop-loss, take-profit, exit price, P&L, R:R planned vs actual</strong>. Also log the setup name, the timeframe, and your emotional state at entry and exit on a 1\u201310 scale (1 = fearful, 10 = overconfident). The emotional data is where the real insights live."}, {title:"The review process", desc:"The journal is useless unless you review it. Every week, spend 20 minutes reviewing the previous week. Ask: which trades followed my plan exactly? What emotion drove the deviations? Are there time-of-day patterns? Over 50+ trades, <strong>statistically significant patterns will emerge</strong> that are invisible without written records."}, {title:"Categorising your mistakes", desc:"Most trading mistakes fall into a few categories: <strong>FOMO entries</strong> (entering late out of fear of missing out), <strong>early exits</strong> (closing winners before TP), <strong>moving stops</strong> (giving losers more room), and <strong>overtrading</strong> (forcing trades when no setup exists). Naming your pattern is the first step to fixing it."}, {title:"Tools to use", desc:"A simple <strong>Google Sheet or Notion table</strong> is enough. The fields matter more than the tool. Some traders add a screenshot of the chart at entry and exit \u2014 extremely valuable for review. Fancy paid journal apps add cost without meaningfully improving the process."}], watchout:"Journalling only your winners. It is psychologically uncomfortable to document losses in detail, so many traders write vague notes on bad trades and detailed notes on wins. This creates a distorted picture. <strong>Your losses are more educational than your wins \u2014 log them more carefully.</strong>", table:null},
+  },
+  {
+    id: 10, section: 'Mindset & review', cat: 'mindset', diff: 'easy',
+    title: 'Study a famous blow-up',
+    desc: 'Other people\'s disasters are the cheapest tuition available. Study them.',
+    claudeTake: `The Luna/Terra collapse of May 2022 wiped out $40 billion in days. The lessons are brutal and clear: <strong>1) Don't hold 100% of your portfolio in one asset, regardless of "certainty"</strong>. 2) Algorithmic stablecoins were always fragile — the mechanism was publicly documented and had obvious failure modes. 3) The moment the peg began slipping, the death spiral was mathematically inevitable. Many people "bought the dip" during the collapse and lost everything. <strong>The FTX collapse (Nov 2022) is equally instructive</strong>: keeping assets on an exchange = not your keys, not your coins. Counterparty risk is real.`,
+    tasks: ['Research the Luna/Terra collapse of May 2022 in detail', 'Identify 3 specific risk management failures', 'Research FTX collapse — what was the core failure?', 'Write: what would you have done differently at each stage?'],
+    quizzes: [
+      { q: 'The Luna/Terra collapse primarily illustrates the danger of:', opts: ['Using leverage on volatile assets', 'Algorithmic stablecoins and single-asset concentration risk', 'Trading on decentralized exchanges', 'Short selling without a stop-loss'], answer: 1, explain: 'UST was an algorithmic stablecoin backed by Luna. When confidence broke, it entered a death spiral: UST loses peg → Luna minted to defend → Luna price collapses → less backing for UST → worse peg. Circular collapse. The mechanism was always fragile.' },
+      { q: 'The phrase "not your keys, not your coins" refers to:', opts: ['Using hardware wallets exclusively', 'The risk of keeping assets on an exchange — you don\'t control the private keys', 'Regulatory risk in crypto', 'Password security for exchanges'], answer: 1, explain: 'The FTX collapse showed that exchange-held assets can disappear. When you hold on an exchange, you hold an IOU — not actual crypto. FTX used customer funds for trading, then became insolvent. Always withdraw to your own wallet for significant holdings.' },
+    ],
+    answerPrompt: 'Summarize the key risk management failures in the Luna collapse and what you would have done differently as an investor',
+    xp: 100,
+    learn: {concepts:[{title:"The Luna/Terra collapse (May 2022)", desc:"Luna was the governance token of the Terra blockchain. UST was an algorithmic stablecoin meant to maintain a $1 peg using Luna as backing. When sell pressure hit UST, the peg slipped \u2192 more Luna was minted to defend it \u2192 Luna price dropped \u2192 less UST backing \u2192 worse peg. A <strong>death spiral</strong> wiped $40 billion in days. Thousands of retail traders lost everything \u2014 including people who bought the dip."}, {title:"The FTX collapse (November 2022)", desc:"FTX was the third-largest crypto exchange. A leaked balance sheet showed FTX's sister firm Alameda Research held most assets in FTT (FTX's own token). A bank run followed; FTX could not meet withdrawals. <strong>Customer funds had been used for Alameda's trading</strong>. Billions in customer assets were lost. Lesson: exchange custody = counterparty risk."}, {title:"Concentration risk", desc:"Both collapses were amplified by people holding <strong>all or most of their portfolio in one asset</strong>. Diversification does not eliminate risk but it prevents a single failure from wiping you out entirely. No position should be so large that losing it changes your financial life."}, {title:"Not your keys, not your coins", desc:"When you hold crypto on an exchange, you hold a <strong>promise from the exchange</strong> to give you crypto when you ask. If the exchange fails, that promise is worthless. For meaningful holdings, withdraw to a hardware wallet (Ledger, Trezor) where you control the private keys."}], watchout:"Survivorship bias in crypto stories. You hear about 100x wins because people share them. You rarely hear about the thousands who lost everything on Luna or held FTX funds. The distribution of outcomes in crypto is extremely fat-tailed. <strong>Protecting downside is more important than chasing upside.</strong>", table:null},
+  },
+  {
+    id: 11, section: 'Mindset & review', cat: 'mindset', diff: 'hard',
+    title: 'Define your trading edge',
+    desc: 'If you can\'t write your edge in one paragraph, you don\'t have one yet.',
+    claudeTake: `This is the hardest challenge — most traders never complete it honestly. An "edge" is a specific, repeatable condition where the probability of profit is measurably higher than random chance. "Buy when it looks good" is not an edge. <strong>A real edge: "I enter long when: (1) daily trend is bullish, (2) price pulls back to the 50 EMA on the 4H, (3) RSI resets to 40-50, (4) a hammer or doji appears on the 1H. Stop below the recent swing low. Target the previous high."</strong> — That's an edge. Specific, repeatable, testable. If your written strategy has any words like "usually", "sometimes", or "if it feels right" — it's not an edge yet.`,
+    tasks: ['Write your strategy in exactly one paragraph — no vagaries', 'Specify your entry trigger, stop placement, and exit rule precisely', 'Backtest it manually on 20 historical setups', 'Calculate theoretical win rate and R:R from your backtest'],
+    quizzes: [
+      { q: 'Which of these is a properly defined trading edge?', opts: ['"I buy when the chart looks bullish and volume is high"', '"I buy altcoins when BTC dominance drops"', '"I enter long when price breaks above 4H resistance, RSI > 50, with a stop below the breakout candle and target at 2× risk"', '"I use RSI and moving averages together"'], answer: 2, explain: 'The third option is a complete edge: it has a precise entry trigger (breakout above 4H resistance), a momentum filter (RSI > 50), a defined stop placement (below breakout candle), and a specific target (2R). The others are too vague to be testable.' },
+    ],
+    answerPrompt: 'Write your full trading edge in one paragraph — entry trigger, stop placement, take profit rule, and what conditions void the setup',
+    xp: 300,
+    learn: {concepts:[{title:"What an edge actually is", desc:"A trading edge is a <strong>specific, repeatable condition where your probability of profit is measurably higher than chance</strong>. It must be precise enough to be tested and specific enough that two different traders reading it would make the same trade. It requires defined entry criteria, a stop rule, and an exit rule."}, {title:"Components of a complete edge", desc:"Every edge needs: (1) <strong>Market condition filter</strong> \u2014 what state must the market be in? (2) <strong>Entry trigger</strong> \u2014 the exact event that tells you to enter. (3) <strong>Stop placement rule</strong> \u2014 where does the trade idea become wrong? (4) <strong>Take-profit rule</strong> \u2014 when do you exit? Without all four you have a vague idea, not an edge."}, {title:"Backtesting manually", desc:"Scroll back through historical charts and apply your rules to past data. Do it on at least 20\u201350 setups. Calculate the win rate and average R:R. If historical results show positive expectancy, your edge has theoretical validity. If not, refine the rules before trading real money."}, {title:"Example of a real edge", desc:"I enter long when: (1) BTC daily is above the 200 EMA, (2) price pulls back to the 4H 50 EMA, (3) RSI is between 40\u201355 on the 4H, (4) a hammer or bullish engulfing appears on the 1H. Stop below the 1H swing low. Target the previous 4H high. <strong>Specific, testable, and repeatable.</strong>"}], watchout:"The urge to make your edge flexible to catch more trades. Every flexibility you add reduces the edge's statistical validity. Fewer, higher-quality setups beat frequent, vague entries every time. <strong>If you cannot describe exactly when NOT to take a trade, your edge is not defined yet.</strong>", table:null},
+  },
+];
+
+const SCANNER_DATA = [
+  { coin: 'BTC/USDT', price: '$67,240', change: '+2.4%', rsi: '58', trend: 'Bullish', signal: 'buy', vol: '$28.4B' },
+  { coin: 'ETH/USDT', price: '$3,180', change: '+1.8%', rsi: '54', trend: 'Bullish', signal: 'buy', vol: '$14.2B' },
+  { coin: 'SOL/USDT', price: '$142.50', change: '-0.9%', rsi: '47', trend: 'Ranging', signal: 'neutral', vol: '$4.1B' },
+  { coin: 'BNB/USDT', price: '$580', change: '+0.4%', rsi: '51', trend: 'Ranging', signal: 'neutral', vol: '$1.8B' },
+  { coin: 'XRP/USDT', price: '$0.520', change: '-1.2%', rsi: '43', trend: 'Bearish', signal: 'sell', vol: '$2.3B' },
+  { coin: 'AVAX/USDT', price: '$34.20', change: '-2.1%', rsi: '38', trend: 'Bearish', signal: 'sell', vol: '$0.9B' },
+];
+
+const STRATEGIES = [
+  { name: 'EMA Trend Pullback', rec: true, desc: 'Wait for price to pull back to the 50 EMA in an established trend. Enter on a bullish candle signal. High probability, low stress.', pills: ['4H chart', 'RSI 40–55', '1:3 R:R', 'Trend following'] },
+  { name: 'Breakout with Volume', rec: false, desc: 'Enter when price breaks a key resistance level with significantly above-average volume. Volume confirms intent.', pills: ['1H–4H', 'Volume filter', 'Clean level', 'Momentum'] },
+  { name: 'RSI Divergence Reversal', rec: false, desc: 'Enter counter-trend when RSI diverges from price at a key S/R level. Higher risk but excellent R:R when it works.', pills: ['1H chart', 'Key S/R needed', '1:4+ R:R', 'Advanced'] },
+  { name: 'Range Scalp', rec: false, desc: 'Trade bounces within a well-defined range. Buy support, sell resistance. Stop just outside the range.', pills: ['15m–1H', 'Ranging market', 'Quick exits', 'Many trades'] },
+];
+
+const TIPS = [
+  'The market will always be there tomorrow. Your capital won\'t be if you revenge trade.',
+  'RSI divergence on the 4H + key S/R level = one of the cleanest setups in crypto.',
+  'Volume confirms everything. A breakout without volume is a trap 60% of the time.',
+  'Paper trade until two consecutive profitable weeks. Then use real money.',
+  'Your stop-loss is not optional. It is the entire point of the trade plan.',
+  'Don\'t trade the news. By the time you see it, the move has already happened.',
+  'The best trade is often no trade. Patience is a position.',
+];
+
+let appState = {
+  completedChallenges: new Set(),
+  challengeProgress: {},
+  quizProgress: {},
+  notes: {},
+  xp: 0,
+  currentView: 'home',
+  currentChallenge: null,
+  apiKey: localStorage.getItem('ct_apikey') || '',
+};
+
+function getProgress() {
+  return (appState.completedChallenges.size / CHALLENGES.length * 100).toFixed(0);
+}
+
+function updateSidebar() {
+  const pct = getProgress();
+
+  const sections = {};
+  CHALLENGES.forEach(c => { if (!sections[c.section]) sections[c.section] = []; sections[c.section].push(c); });
+
+  let html = '';
+  Object.entries(sections).forEach(([sec, chs]) => {
+    const icons = { 'Foundations': '◈', 'Technical skills': '◉', 'Risk & strategy': '◎', 'Mindset & review': '◇' };
+    html += `<div class="nav-section-label" style="margin-top:14px">${icons[sec] || '◈'} ${sec}</div>`;
+    chs.forEach(c => {
+      const done = appState.completedChallenges.has(c.id);
+      const active = appState.currentChallenge === c.id && appState.currentView === 'challenge';
+      const catColors = { concept: '#60a5fa', analysis: '#a78bfa', practice: '#00e5a0', mindset: '#ff6b35' };
+      html += `<div class="nav-item ${active ? 'active' : ''}" onclick="openChallenge(${c.id})">
+        <div class="nav-icon" style="background:${catColors[c.cat]}18;color:${catColors[c.cat]};font-size:12px">${c.id + 1}</div>
+        <div class="nav-info">
+          <div class="nav-name">${c.title}</div>
+          <div class="nav-meta">${c.cat} · ${c.diff}</div>
+        </div>
+        <div class="nav-status"><div class="status-dot ${done ? 'status-done' : active ? 'status-active' : 'status-locked'}"></div></div>
+      </div>`;
+    });
+  });
+  document.getElementById('nav-list').innerHTML = html;
+
+  // Update progress after nav rebuild, inside rAF so browser commits layout first
+  requestAnimationFrame(() => {
+    const fill = document.getElementById('prog-fill');
+    const pctEl = document.getElementById('prog-pct');
+    const xpEl = document.getElementById('xp-val');
+    const strEl = document.getElementById('streak-val');
+    if (fill) fill.style.width = pct + '%';
+    if (pctEl) pctEl.textContent = pct + '%';
+    if (xpEl) xpEl.textContent = appState.xp;
+    if (strEl) strEl.textContent = Math.min(appState.completedChallenges.size, 7);
+  });
+
+  const tip = TIPS[Math.floor(Math.random() * TIPS.length)];
+  document.getElementById('daily-tip').textContent = tip;
+}
+
+function showHome() {
+  appState.currentView = 'home';
+  appState.currentChallenge = null;
+  document.getElementById('nav-home').classList.add('active');
+  updateSidebar();
+
+  const sections = {};
+  CHALLENGES.forEach(c => { if (!sections[c.section]) sections[c.section] = []; sections[c.section].push(c); });
+
+  const catColors = { concept: '#60a5fa', analysis: '#a78bfa', practice: '#00e5a0', mindset: '#ff6b35' };
+  const catIcons = { concept: '◈', analysis: '◉', practice: '◎', mindset: '◇' };
+
+  let sectionCards = '';
+  Object.entries(sections).forEach(([sec, chs]) => {
+    const done = chs.filter(c => appState.completedChallenges.has(c.id)).length;
+    const pct = Math.round(done / chs.length * 100);
+    const sectionIcons = { 'Foundations': '◈', 'Technical skills': '◉', 'Risk & strategy': '◎', 'Mindset & review': '◇' };
+    sectionCards += `<div class="home-card" onclick="openChallenge(${chs[0].id})">
+      <div class="home-card-icon" style="font-size:18px;color:var(--accent)">${sectionIcons[sec]}</div>
+      <div class="home-card-title">${sec}</div>
+      <div class="home-card-count" style="margin-bottom:4px">${done}/${chs.length} complete</div>
+      <div class="home-card-bar"><div class="home-card-prog" style="width:${pct}%;background:var(--accent)"></div></div>
+    </div>`;
+  });
+
+  const nextChallenge = CHALLENGES.find(c => !appState.completedChallenges.has(c.id));
+
+  document.getElementById('main-content').innerHTML = `
+    <div class="fade-in">
+      <div class="welcome-block">
+        <div class="welcome-title">Your learning dashboard</div>
+        <div class="welcome-sub">You're building towards a structured crypto trading approach. Each challenge builds on the last — don't skip foundations.</div>
+        <div class="streak-bar">${[0,1,2,3,4,5,6].map(i=>`<div class="streak-item"><div class="streak-dot ${i < appState.completedChallenges.size ? 'active' : ''}"></div><div class="streak-day">${['M','T','W','T','F','S','S'][i]}</div></div>`).join('')}</div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-val green">${appState.completedChallenges.size}</div><div class="stat-lbl">Completed</div></div>
+        <div class="stat-card"><div class="stat-val">${CHALLENGES.length - appState.completedChallenges.size}</div><div class="stat-lbl">Remaining</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--amber)">${appState.xp}</div><div class="stat-lbl">XP earned</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--purple)">${getProgress()}%</div><div class="stat-lbl">Progress</div></div>
+      </div>
+      <div class="section-title">Sections</div>
+      <div class="home-grid">${sectionCards}</div>
+      ${nextChallenge ? `
+      <div class="section-title">Continue where you left off</div>
+      <div class="home-card" onclick="openChallenge(${nextChallenge.id})" style="display:flex;align-items:center;gap:16px;max-width:480px">
+        <div style="width:40px;height:40px;border-radius:8px;background:rgba(0,229,160,0.1);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:16px;color:var(--accent);flex-shrink:0">${nextChallenge.id + 1}</div>
+        <div>
+          <div class="home-card-title">${nextChallenge.title}</div>
+          <div class="home-card-count">${nextChallenge.section} · ${nextChallenge.cat} · ${nextChallenge.diff}</div>
+        </div>
+        <div style="margin-left:auto;color:var(--accent);font-size:18px">→</div>
+      </div>` : `<div style="padding:20px;color:var(--green);font-family:var(--mono);font-size:13px">All challenges complete. You've built a real foundation.</div>`}
+      
+      <div style="margin-top:36px">
+        <div class="section-title">Market scanner (simulated)</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Pair</th><th>Price</th><th>24h</th><th>RSI</th><th>Trend</th><th>Signal</th><th>Volume</th></tr></thead>
+            <tbody>${SCANNER_DATA.map(r=>`<tr>
+              <td style="font-family:var(--mono)">${r.coin}</td>
+              <td style="font-family:var(--mono)">${r.price}</td>
+              <td class="${r.change.startsWith('+') ? 'green' : 'red'}" style="font-family:var(--mono)">${r.change}</td>
+              <td style="font-family:var(--mono)">${r.rsi}</td>
+              <td style="color:${r.trend==='Bullish'?'var(--green)':r.trend==='Bearish'?'var(--red)':'var(--amber)'}">${r.trend}</td>
+              <td><span class="signal-badge signal-${r.signal}">${r.signal.toUpperCase()}</span></td>
+              <td style="color:var(--text3)">${r.vol}</td>
+            </tr>`).join('')}</tbody>
+          </table>
+        </div>
+        <div style="font-size:11px;color:var(--text3);font-family:var(--mono)">// Simulated data for learning purposes. Signals based on RSI + trend direction.</div>
+      </div>
+
+      <div style="margin-top:32px">
+        <div class="section-title">Recommended strategies for beginners</div>
+        <div class="strat-grid">
+          ${STRATEGIES.map(s=>`<div class="strat-card ${s.rec?'recommended':''}">
+            <div class="strat-header">
+              <span class="strat-name">${s.name}</span>
+              ${s.rec?'<span class="rec-badge">Claude pick</span>':''}
+            </div>
+            <div class="strat-desc">${s.desc}</div>
+            <div class="strat-meta">${s.pills.map(p=>`<span class="meta-pill">${p}</span>`).join('')}</div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+function openChallenge(id) {
+  appState.currentView = 'challenge';
+  appState.currentChallenge = id;
+  document.getElementById('nav-home').classList.remove('active');
+  if (!appState.challengeProgress[id]) appState.challengeProgress[id] = [];
+  if (!appState.quizProgress[id]) appState.quizProgress[id] = {};
+  updateSidebar();
+  renderChallenge(id);
+}
+
+function renderChallenge(id) {
+  const c = CHALLENGES[id];
+  const tasks = appState.challengeProgress[id] || [];
+  const done = appState.completedChallenges.has(id);
+  const qp = appState.quizProgress[id] || {};
+  const allQuizDone = c.quizzes.every((_, i) => qp[i] !== undefined);
+  const allTasksDone = c.tasks.every((_, i) => tasks[i]);
+  const notes = appState.notes[id] || '';
+
+  const catClass = { concept:'tag-concept', practice:'tag-practice', analysis:'tag-analysis', mindset:'tag-mindset' };
+  const diffClass = { easy:'diff-easy', medium:'diff-medium', hard:'diff-hard' };
+
+  let quizHtml = '';
+  c.quizzes.forEach((q, qi) => {
+    const answered = qp[qi];
+    const locked = qi > 0 && qp[qi-1] === undefined;
+    if (locked) {
+      quizHtml += `<div class="quiz-block" id="quiz-${id}-${qi}" style="opacity:0.4;pointer-events:none">
+        <div class="quiz-progress">Question ${qi+1} of ${c.quizzes.length} — complete previous first</div>
+        <div class="quiz-q">${q.q}</div>
+        <div class="quiz-options">${q.opts.map(o=>`<button class="quiz-opt" disabled>${o}</button>`).join('')}</div>
+      </div>`;
+    } else {
+      quizHtml += `<div class="quiz-block" id="quiz-${id}-${qi}">
+        <div class="quiz-progress">Question ${qi+1} of ${c.quizzes.length}</div>
+        <div class="quiz-q">${q.q}</div>
+        <div class="quiz-options">
+          ${q.opts.map((o,oi)=>{
+            let cls = 'quiz-opt';
+            if (answered !== undefined) {
+              if (oi === q.answer) cls += ' correct';
+              else if (oi === answered && answered !== q.answer) cls += ' wrong';
+              else cls += ' reveal';
+            }
+            return `<button class="${cls}" ${answered!==undefined?'disabled':''} onclick="answerQuiz(${id},${qi},${oi})">${o}</button>`;
+          }).join('')}
+        </div>
+        ${answered !== undefined ? `
+          <div class="quiz-feedback ${answered===q.answer?'correct':'wrong'}">
+            ${answered===q.answer?'✓ Correct — ':'✗ Incorrect — '}${q.explain}
+          </div>
+          ${qi < c.quizzes.length-1 ? `<button class="quiz-next" onclick="scrollToQuiz(${id},${qi+1})">Next question →</button>` : ''}
+        ` : ''}
+      </div>`;
+    }
+  });
+
+  document.getElementById('main-content').innerHTML = `
+    <div class="fade-in">
+      <div class="challenge-header">
+        <div class="ch-meta">
+          <span class="tag ${catClass[c.cat]}">${c.cat}</span>
+          <span class="tag diff-tag ${diffClass[c.diff]}">${c.diff}</span>
+          <span style="font-size:11px;color:var(--text3);font-family:var(--mono)">${c.section}</span>
+          ${done?'<span style="font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(0,229,160,0.1);color:var(--green);font-family:var(--mono)">COMPLETE</span>':''}
+        </div>
+        <div class="ch-title">${c.id+1}. ${c.title}</div>
+        <div class="ch-desc">${c.desc}</div>
+      </div>
+
+      <div class="learn-section" id="learn-${id}">
+        <div class="learn-toggle" onclick="toggleLearn(${id})">
+          <div class="learn-toggle-left">
+            <span class="learn-badge">Read first</span>
+            <span class="learn-toggle-title">Learning material</span>
+          </div>
+          <span class="learn-arrow" id="learn-arrow-${id}">▼</span>
+        </div>
+        <div class="learn-body visible" id="learn-body-${id}">
+          <div class="learn-concepts">
+            ${c.learn.concepts.map((con, i) => `
+              <div class="concept-item">
+                <div class="concept-num">${i+1}</div>
+                <div>
+                  <div class="concept-title">${con.title}</div>
+                  <div class="concept-desc">${con.desc}</div>
+                </div>
+              </div>`).join('')}
+          </div>
+          <div class="watchout-box">
+            <div class="watchout-label">// Watch out for</div>
+            <div class="watchout-text">${c.learn.watchout}</div>
+          </div>
+          ${c.learn.table ? `
+          <table class="ref-table">
+            <thead><tr>${c.learn.table.headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+            <tbody>${c.learn.table.rows.map(r=>`<tr>${r.map(cell=>`<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody>
+          </table>` : ''}
+        </div>
+      </div>
+
+      <div class="claude-take">
+        <div class="ct-label">// Claude's take</div>
+        <div class="ct-text">${c.claudeTake}</div>
+      </div>
+
+      <div class="section-title">Tasks</div>
+      <div class="task-list">
+        ${c.tasks.map((t,ti)=>`
+          <div class="task-item ${tasks[ti]?'done':''}" id="task-${id}-${ti}" onclick="toggleTask(${id},${ti})">
+            <div class="task-cb">
+              ${tasks[ti]?`<svg width="9" height="9" viewBox="0 0 9 9"><polyline points="1,4.5 3.5,7 8,2" stroke="black" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>`:''}
+            </div>
+            <span class="task-text">${t}</span>
+          </div>`).join('')}
+      </div>
+
+      <div class="section-title">Knowledge check</div>
+      ${quizHtml}
+
+      <div class="section-title" style="margin-top:24px">Your answer / reflection</div>
+      <div class="input-group">
+        <div class="input-label"><span>Write your response — Claude will check it</span><span>${notes.length > 10 ? notes.split(' ').length + ' words' : 'Start writing...'}</span></div>
+        <textarea id="answer-${id}" placeholder="${c.answerPrompt}..." rows="5" oninput="saveNote(${id})">${notes}</textarea>
+      </div>
+      <div class="check-area">
+        <button class="btn btn-primary" id="check-btn-${id}" onclick="checkAnswer(${id})" ${notes.length < 20 ? 'disabled' : ''}>Check my answer</button>
+        <button class="btn btn-ghost" onclick="clearAnswer(${id})">Clear</button>
+      </div>
+      <div id="feedback-${id}"></div>
+
+      <div class="complete-row">
+        <button class="btn ${done?'btn-done':'btn-ghost'}" onclick="toggleComplete(${id})" id="complete-btn-${id}">
+          ${done?'✓ Marked complete':'Mark as complete'}
+        </button>
+        <span class="complete-msg">${c.xp} XP · ${done?'Challenge complete':'Complete tasks and quiz to earn XP'}</span>
+        ${id < CHALLENGES.length-1 ? `<button class="btn btn-ghost" onclick="openChallenge(${id+1})" style="margin-left:auto">Next challenge →</button>` : ''}
+      </div>
+    </div>`;
+
+  document.getElementById(`answer-${id}`).addEventListener('input', e => {
+    const btn = document.getElementById(`check-btn-${id}`);
+    if (btn) btn.disabled = e.target.value.length < 20;
+  });
+}
+
+function toggleTask(cid, ti) {
+  if (!appState.challengeProgress[cid]) appState.challengeProgress[cid] = [];
+  appState.challengeProgress[cid][ti] = !appState.challengeProgress[cid][ti];
+  const el = document.getElementById(`task-${cid}-${ti}`);
+  if (el) {
+    el.classList.toggle('done', appState.challengeProgress[cid][ti]);
+    el.querySelector('.task-cb').innerHTML = appState.challengeProgress[cid][ti]
+      ? `<svg width="9" height="9" viewBox="0 0 9 9"><polyline points="1,4.5 3.5,7 8,2" stroke="black" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>` : '';
+    el.querySelector('.task-text').className = 'task-text' + (appState.challengeProgress[cid][ti] ? ' ' : '');
+    if(appState.challengeProgress[cid][ti]) el.querySelector('.task-text').style.textDecoration = 'line-through';
+    else el.querySelector('.task-text').style.textDecoration = '';
+  }
+}
+
+function toggleLearn(id) {
+  const body = document.getElementById('learn-body-' + id);
+  const arrow = document.getElementById('learn-arrow-' + id);
+  if (!body || !arrow) return;
+  body.classList.toggle('visible');
+  arrow.classList.toggle('open');
+}
+
+function renderQuizBlock(cid, qi) {
+  const c = CHALLENGES[cid];
+  const q = c.quizzes[qi];
+  const qp = appState.quizProgress[cid] || {};
+  const answered = qp[qi];
+  const el = document.getElementById(`quiz-${cid}-${qi}`);
+  if (!el) return;
+  el.style.opacity = '1';
+  el.style.pointerEvents = 'auto';
+  el.innerHTML = `
+    <div class="quiz-progress">Question ${qi+1} of ${c.quizzes.length}</div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-options">
+      ${q.opts.map((o,oi) => {
+        let cls = 'quiz-opt';
+        if (answered !== undefined) {
+          if (oi === q.answer) cls += ' correct';
+          else if (oi === answered && answered !== q.answer) cls += ' wrong';
+          else cls += ' reveal';
+        }
+        return `<button class="${cls}" ${answered!==undefined?'disabled':''} onclick="answerQuiz(${cid},${qi},${oi})">${o}</button>`;
+      }).join('')}
+    </div>
+    ${answered !== undefined ? `
+      <div class="quiz-feedback ${answered===q.answer?'correct':'wrong'}">
+        ${answered===q.answer?'✓ Correct — ':'✗ Incorrect — '}${q.explain}
+      </div>
+      ${qi < c.quizzes.length-1 ? `<button class="quiz-next" onclick="scrollToQuiz(${cid},${qi+1})">Next question →</button>` : ''}
+    ` : ''}`;
+}
+
+function answerQuiz(cid, qi, selected) {
+  if (!appState.quizProgress[cid]) appState.quizProgress[cid] = {};
+  appState.quizProgress[cid][qi] = selected;
+  const c = CHALLENGES[cid];
+  const q = c.quizzes[qi];
+  const container = document.getElementById(`quiz-${cid}-${qi}`);
+  if (!container) return;
+  const opts = container.querySelectorAll('.quiz-opt');
+  opts.forEach((btn, oi) => {
+    btn.disabled = true;
+    if (oi === q.answer) btn.className = 'quiz-opt correct';
+    else if (oi === selected && selected !== q.answer) btn.className = 'quiz-opt wrong';
+    else btn.className = 'quiz-opt reveal';
+  });
+  const optsEl = container.querySelector('.quiz-options');
+  const feedbackEl = document.createElement('div');
+  feedbackEl.className = `quiz-feedback ${selected === q.answer ? 'correct' : 'wrong'}`;
+  feedbackEl.innerHTML = `${selected === q.answer ? '✓ Correct — ' : '✗ Incorrect — '}${q.explain}`;
+  optsEl.after(feedbackEl);
+  if (qi < c.quizzes.length - 1) {
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'quiz-next';
+    nextBtn.textContent = 'Next question →';
+    nextBtn.onclick = () => {
+      renderQuizBlock(cid, qi + 1);
+      scrollToQuiz(cid, qi + 1);
+    };
+    feedbackEl.after(nextBtn);
+  }
+  updateSidebar();
+}
+
+function scrollToQuiz(cid, qi) {
+  const el = document.getElementById(`quiz-${cid}-${qi}`);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function saveNote(cid) {
+  const el = document.getElementById(`answer-${cid}`);
+  if (el) {
+    appState.notes[cid] = el.value;
+    const btn = document.getElementById(`check-btn-${cid}`);
+    if (btn) btn.disabled = el.value.length < 20;
+  }
+}
+
+function clearAnswer(cid) {
+  appState.notes[cid] = '';
+  const el = document.getElementById(`answer-${cid}`);
+  if (el) el.value = '';
+  document.getElementById(`feedback-${cid}`).innerHTML = '';
+  const btn = document.getElementById(`check-btn-${cid}`);
+  if (btn) btn.disabled = true;
+}
+
+const RUBRICS = [
+  { keywords: ['cex','dex','centralised','decentralized','decentralised','order book','bid','ask','spread','liquidity','market maker','slippage','custody','price','trade','exchange'], strong: ['spread','slippage','market maker','order book'], topic: 'market structure' },
+  { keywords: ['doji','hammer','engulfing','wick','candle','open','close','high','low','body','pattern','reversal','support','resistance','timeframe','bullish','bearish','signal','context'], strong: ['context','wick','engulfing','timeframe'], topic: 'candlestick patterns' },
+  { keywords: ['market order','limit order','stop','stop-loss','stop-limit','trailing','fill','slippage','price','entry','exit','trigger','fee','maker','taker'], strong: ['stop-limit','trailing','slippage','limit order'], topic: 'order types' },
+  { keywords: ['support','resistance','level','bounce','break','flip','zone','wick','touch','reaction','timeframe','daily','horizontal'], strong: ['flip','zone','timeframe','break'], topic: 'support and resistance' },
+  { keywords: ['rsi','ema','moving average','golden cross','death cross','divergence','overbought','oversold','momentum','indicator','50','200','signal','confluence'], strong: ['divergence','confluence','golden cross','50 ema'], topic: 'indicators' },
+  { keywords: ['daily','4h','1h','timeframe','align','trend','bias','bullish','bearish','ranging','higher','lower','confluence','top-down'], strong: ['confluence','top-down','align','bias'], topic: 'multi-timeframe analysis' },
+  { keywords: ['risk','percent','position size','stop','daily limit','loss','1%','2%','formula','account','entry','emotion','revenge'], strong: ['position size','formula','daily limit','1%'], topic: 'risk management rules' },
+  { keywords: ['paper','trade','testnet','bybit','binance','tradingview','win rate','r:r','expectancy','log','journal','plan','rule','loss'], strong: ['expectancy','win rate','testnet','log'], topic: 'paper trading' },
+  { keywords: ['risk','reward','r:r','ratio','entry','stop','target','take profit','resistance','1:2','1:3','technical','level'], strong: ['1:2','1:3','technical','formula'], topic: 'risk reward ratio' },
+  { keywords: ['journal','log','emotion','entry','exit','pattern','mistake','plan','fomo','review','weekly','screenshot','trade'], strong: ['emotion','pattern','review','mistake'], topic: 'trade journal' },
+  { keywords: ['luna','terra','ftx','collapse','stablecoin','peg','death spiral','custody','keys','coins','risk','concentration','bankman'], strong: ['death spiral','custody','concentration','peg'], topic: 'famous blow-ups' },
+  { keywords: ['edge','strategy','entry','stop','target','timeframe','specific','repeatable','backtest','trigger','rule','filter','define'], strong: ['specific','repeatable','backtest','trigger'], topic: 'trading edge' },
+];
+
+function scoreAnswer(cid, answer) {
+  const rubric = RUBRICS[cid];
+  const lower = answer.toLowerCase();
+  const words = lower.split(/\s+/).length;
+
+  const kwHits = rubric.keywords.filter(k => lower.includes(k));
+  const strongHits = rubric.strong.filter(k => lower.includes(k));
+
+  const kwScore = Math.min(kwHits.length / rubric.keywords.length, 1);
+  const strongScore = Math.min(strongHits.length / rubric.strong.length, 1);
+  const lengthScore = Math.min(words / 80, 1);
+
+  const raw = (kwScore * 0.4 + strongScore * 0.4 + lengthScore * 0.2) * 10;
+  const score = Math.min(10, Math.max(1, Math.round(raw)));
+
+  const verdict = score >= 8 ? 'strong' : score >= 5 ? 'good' : 'needs_work';
+
+  const missed = rubric.strong.filter(k => !lower.includes(k));
+  const hit = rubric.strong.filter(k => lower.includes(k));
+
+  let feedback, strength, improvement;
+
+  if (verdict === 'strong') {
+    feedback = `Strong answer on ${rubric.topic}. You covered the key concepts clearly and showed genuine understanding — hitting ${kwHits.length} of ${rubric.keywords.length} core ideas including the important details.`;
+    strength = hit.length ? `You specifically addressed "${hit[0]}" which is one of the most important points here.` : 'You demonstrated a well-rounded grasp of the topic.';
+    improvement = missed.length ? `For even deeper mastery, explore the concept of "${missed[0]}" further.` : 'Consider how you would apply this to a live trade scenario.';
+  } else if (verdict === 'good') {
+    feedback = `Good answer on ${rubric.topic} — you covered the basics and showed understanding of the core idea. There are a few key concepts worth adding to make this complete.`;
+    strength = hit.length ? `You correctly covered "${hit[0]}" which is a key concept many beginners miss.` : `You captured the main idea of ${rubric.topic} clearly.`;
+    improvement = missed.length ? `Dig deeper into "${missed[0]}" — it is one of the most practically important aspects of this topic.` : 'Try to be more specific with examples — concrete scenarios show real understanding.';
+  } else {
+    feedback = `Your answer on ${rubric.topic} is a start, but needs more depth. Only ${kwHits.length} of the core concepts were mentioned. Read the learning material again and try to address the key points more explicitly.`;
+    strength = kwHits.length ? `You mentioned "${kwHits[0]}" which shows you are on the right track.` : 'You have made an attempt — now go deeper with the specifics.';
+    improvement = missed.length ? `The most important gap: "${missed[0]}" is central to this topic and was not addressed.` : 'Aim for at least 60-80 words and cover the what, why, and how of the concept.';
+  }
+
+  return { score, verdict, feedback, strength, improvement };
+}
+
+async function checkAnswer(cid) {
+  const c = CHALLENGES[cid];
+  const answer = appState.notes[cid] || '';
+  if (answer.length < 20) return;
+  const btn = document.getElementById(`check-btn-${cid}`);
+  const fb = document.getElementById(`feedback-${cid}`);
+  if (!btn || !fb) return;
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Checking...';
+  fb.innerHTML = '';
+
+  await new Promise(r => setTimeout(r, 600));
+
+  let parsed;
+  const apiKey = appState.apiKey || '';
+
+  if (apiKey) {
+    try {
+      const prompt = `You are a crypto trading coach reviewing a beginner student's written answer.
+Challenge: "${c.title}"
+What the student was asked to address: "${c.answerPrompt}"
+Student's answer: "${answer}"
+
+Respond with a JSON object (no markdown, just raw JSON) with these fields:
+- score: number 1-10
+- verdict: "strong" | "good" | "needs_work"
+- feedback: 2-3 sentence specific feedback referencing what they wrote
+- strength: one specific thing they did well (1 sentence)
+- improvement: one concrete thing to improve or think about (1 sentence)`;
+
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+        body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 600, messages: [{ role: 'user', content: prompt }] })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const raw = data.content.map(b => b.text || '').join('');
+        try { parsed = JSON.parse(raw.replace(/```json|```/g, '').trim()); } catch(e) {}
+      }
+    } catch(e) {}
+  }
+
+  if (!parsed) parsed = scoreAnswer(cid, answer);
+
+  const colors = { strong: 'var(--green)', good: 'var(--amber)', needs_work: 'var(--red)' };
+  const labels = { strong: 'Strong answer', good: 'Good answer', needs_work: 'Needs more depth' };
+  const mode = apiKey && parsed ? '// AI feedback' : '// Smart feedback';
+  fb.innerHTML = `<div class="ai-feedback fade-in">
+    <div class="af-header">
+      <div class="af-icon">✦</div>
+      <span class="af-label">${mode}</span>
+    </div>
+    <div class="af-text">
+      <div style="margin-bottom:8px">${parsed.feedback}</div>
+      <div style="margin-bottom:4px"><strong style="color:var(--green)">Strong:</strong> ${parsed.strength}</div>
+      <div><strong style="color:var(--amber)">Consider:</strong> ${parsed.improvement}</div>
+    </div>
+    <div class="af-score">
+      <span class="score-val" style="color:${colors[parsed.verdict]}">${parsed.score}/10</span>
+      <span>${labels[parsed.verdict]}</span>
+    </div>
+  </div>`;
+
+  btn.innerHTML = 'Check my answer';
+  btn.disabled = false;
+}
+
+function toggleComplete(cid) {
+  const c = CHALLENGES[cid];
+  if (appState.completedChallenges.has(cid)) {
+    appState.completedChallenges.delete(cid);
+    appState.xp = Math.max(0, appState.xp - c.xp);
+  } else {
+    appState.completedChallenges.add(cid);
+    appState.xp += c.xp;
+  }
+  const done = appState.completedChallenges.has(cid);
+  const btn = document.getElementById(`complete-btn-${cid}`);
+  if (btn) {
+    btn.className = `btn ${done ? 'btn-done' : 'btn-ghost'}`;
+    btn.textContent = done ? '✓ Marked complete' : 'Mark as complete';
+  }
+  updateSidebar();
+}
+
+function saveApiKey(val) {
+  appState.apiKey = val.trim();
+  if (val.trim()) localStorage.setItem('ct_apikey', val.trim());
+  else localStorage.removeItem('ct_apikey');
+}
+
+// Restore API key input if saved
+window.addEventListener('DOMContentLoaded', () => {
+  const k = appState.apiKey;
+  if (k) { const el = document.getElementById('api-key-input'); if (el) el.value = k; }
+});
+
+// Initialise progress bar via JS (not inline style) so transitions work
+requestAnimationFrame(() => {
+  const fill = document.getElementById('prog-fill');
+  if (fill) fill.style.width = '0%';
+});
+
+showHome();
+</script>
+</body>
+</html>

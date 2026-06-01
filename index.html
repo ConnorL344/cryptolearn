@@ -268,7 +268,7 @@ canvas { display: block; width: 100%; }
     </div>
     <div class="prog-section">
       <div class="prog-label"><span>Overall progress</span><span id="prog-pct">0%</span></div>
-      <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
       <div class="xp-row">
         <div class="xp-pill">XP: <span id="xp-val">0</span></div>
         <div class="xp-pill">Streak: <span id="streak-val">0</span> days</div>
@@ -522,8 +522,23 @@ function getProgress() {
   return (appState.completedChallenges.size / CHALLENGES.length * 100).toFixed(0);
 }
 
+function setProgressBar(pct) {
+  const fill = document.getElementById('prog-fill');
+  const pctEl = document.getElementById('prog-pct');
+  if (!fill || !pctEl) return;
+  fill.style.width = pct + '%';
+  pctEl.textContent = pct + '%';
+}
+
 function updateSidebar() {
   const pct = getProgress();
+
+  // Update progress bar immediately — it is NOT inside nav-list so innerHTML rebuild cannot affect it
+  setProgressBar(pct);
+  const xpEl = document.getElementById('xp-val');
+  const strEl = document.getElementById('streak-val');
+  if (xpEl) xpEl.textContent = appState.xp;
+  if (strEl) strEl.textContent = Math.min(appState.completedChallenges.size, 7);
 
   const sections = {};
   CHALLENGES.forEach(c => { if (!sections[c.section]) sections[c.section] = []; sections[c.section].push(c); });
@@ -547,18 +562,6 @@ function updateSidebar() {
     });
   });
   document.getElementById('nav-list').innerHTML = html;
-
-  // Update progress after nav rebuild, inside rAF so browser commits layout first
-  requestAnimationFrame(() => {
-    const fill = document.getElementById('prog-fill');
-    const pctEl = document.getElementById('prog-pct');
-    const xpEl = document.getElementById('xp-val');
-    const strEl = document.getElementById('streak-val');
-    if (fill) fill.style.width = pct + '%';
-    if (pctEl) pctEl.textContent = pct + '%';
-    if (xpEl) xpEl.textContent = appState.xp;
-    if (strEl) strEl.textContent = Math.min(appState.completedChallenges.size, 7);
-  });
 
   const tip = TIPS[Math.floor(Math.random() * TIPS.length)];
   document.getElementById('daily-tip').textContent = tip;
@@ -1057,12 +1060,6 @@ function saveApiKey(val) {
 window.addEventListener('DOMContentLoaded', () => {
   const k = appState.apiKey;
   if (k) { const el = document.getElementById('api-key-input'); if (el) el.value = k; }
-});
-
-// Initialise progress bar via JS (not inline style) so transitions work
-requestAnimationFrame(() => {
-  const fill = document.getElementById('prog-fill');
-  if (fill) fill.style.width = '0%';
 });
 
 showHome();
